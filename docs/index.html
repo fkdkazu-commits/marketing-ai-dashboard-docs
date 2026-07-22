@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>マーケティングAIダッシュボード — 要件定義書 兼 設計書</title>
+<style>
+  :root {
+    --sidebar-width: 280px;
+    --sidebar-bg: #0f172a;
+    --sidebar-hover: #1e293b;
+    --sidebar-active: #60a5fa;
+    --header-bg: #1e3a8a;
+    --content-bg: #f1f5f9;
+    --card-bg: #ffffff;
+    --text-primary: #1e293b;
+    --text-secondary: #64748b;
+    --accent: #1d4ed8;
+    --accent-light: #dbeafe;
+    --border: #e2e8f0;
+    --green: #16a34a;
+    --green-bg: #f0fdf4;
+    --green-border: #bbf7d0;
+    --yellow: #b45309;
+    --yellow-bg: #fffbeb;
+    --yellow-border: #fde68a;
+    --red: #dc2626;
+    --red-bg: #fef2f2;
+    --red-border: #fecaca;
+    --purple: #7c3aed;
+    --purple-bg: #f5f3ff;
+    --purple-border: #ddd6fe;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 14px;
+    line-height: 1.8;
+    color: var(--text-primary);
+    background: var(--content-bg);
+  }
+  .wrapper { display: flex; min-height: 100vh; }
+
+  /* ── Sidebar ── */
+  .sidebar {
+    width: var(--sidebar-width);
+    background: var(--sidebar-bg);
+    position: fixed; top: 0; left: 0;
+    height: 100vh; overflow-y: auto; z-index: 100;
+    scrollbar-width: thin; scrollbar-color: #334155 transparent;
+  }
+  .sidebar::-webkit-scrollbar { width: 4px; }
+  .sidebar::-webkit-scrollbar-thumb { background: #334155; border-radius: 2px; }
+  .sidebar-header { padding: 22px 20px 16px; border-bottom: 1px solid #1e293b; }
+  .sidebar-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; color: #475569; margin-bottom: 6px; }
+  .sidebar-title { font-size: 13px; font-weight: 700; color: #e2e8f0; line-height: 1.5; }
+  .sidebar-meta { font-size: 11px; color: #475569; margin-top: 5px; }
+  .sidebar-nav { padding: 6px 0 24px; }
+  .nav-group { padding: 14px 20px 4px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: #475569; }
+  .nav-item {
+    display: flex; align-items: center; gap: 9px;
+    padding: 7px 20px; font-size: 12.5px; color: #94a3b8;
+    text-decoration: none; cursor: pointer;
+    border-left: 2px solid transparent;
+    transition: all .15s;
+  }
+  .nav-item:hover { background: var(--sidebar-hover); color: #e2e8f0; }
+  .nav-item.active { color: var(--sidebar-active); border-left-color: var(--sidebar-active); background: rgba(96,165,250,.08); }
+  .nav-badge {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 20px; height: 20px; border-radius: 50%;
+    background: #1e293b; color: #60a5fa;
+    font-size: 10px; font-weight: 700; flex-shrink: 0;
+  }
+  .nav-item.active .nav-badge { background: #1e3a8a; }
+
+  /* ── Main ── */
+  .main { margin-left: var(--sidebar-width); flex: 1; min-width: 0; }
+  .page-header { background: var(--header-bg); padding: 40px 52px 36px; color: #fff; }
+  .page-header-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .12em; color: #93c5fd; margin-bottom: 10px; }
+  .page-header h1 { font-size: 26px; font-weight: 800; line-height: 1.3; margin-bottom: 10px; }
+  .page-header-desc { font-size: 14px; color: #bfdbfe; max-width: 640px; line-height: 1.7; }
+  .page-header-meta { display: flex; flex-wrap: wrap; gap: 6px 22px; margin-top: 18px; font-size: 12px; color: #93c5fd; }
+  .page-header-meta strong { color: #dbeafe; }
+  .content { padding: 44px 52px 80px; max-width: 980px; }
+
+  /* ── Section ── */
+  .section { margin-bottom: 52px; scroll-margin-top: 20px; }
+  .section-header { display: flex; align-items: flex-start; gap: 14px; margin-bottom: 22px; padding-bottom: 14px; border-bottom: 2px solid var(--border); }
+  .step-circle {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 36px; height: 36px; border-radius: 50%;
+    background: var(--accent); color: #fff;
+    font-size: 14px; font-weight: 800; flex-shrink: 0; margin-top: 1px;
+  }
+  .section-header h2 { font-size: 18px; font-weight: 700; color: var(--text-primary); margin-bottom: 3px; }
+  .section-header .sub { font-size: 12.5px; color: var(--text-secondary); }
+
+  /* ── Card ── */
+  .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 10px; padding: 24px 28px; margin-bottom: 16px; }
+  .card h3 { font-size: 14px; font-weight: 700; margin-bottom: 12px; color: var(--text-primary); }
+  .card h4 { font-size: 13px; font-weight: 700; margin-bottom: 8px; color: var(--text-primary); }
+  .card p { margin-bottom: 10px; }
+  .card p:last-child { margin-bottom: 0; }
+
+  /* ── Callout ── */
+  .callout { display: flex; gap: 12px; padding: 13px 17px; border-radius: 8px; margin: 12px 0; font-size: 13px; line-height: 1.75; }
+  .callout-icon { font-size: 15px; flex-shrink: 0; margin-top: 2px; }
+  .callout.ok   { background: var(--green-bg);   border: 1px solid var(--green-border);  color: #14532d; }
+  .callout.warn { background: var(--yellow-bg);  border: 1px solid var(--yellow-border); color: #78350f; }
+  .callout.info { background: var(--accent-light); border: 1px solid #bfdbfe;            color: #1e3a8a; }
+  .callout.note { background: var(--purple-bg);  border: 1px solid var(--purple-border); color: #4c1d95; }
+  .callout.danger { background: var(--red-bg);   border: 1px solid var(--red-border);    color: #7f1d1d; }
+
+  /* ── Table ── */
+  .tbl { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .tbl th { background: #f8fafc; text-align: left; padding: 9px 14px; font-weight: 700; font-size: 11px; text-transform: uppercase; letter-spacing: .05em; color: var(--text-secondary); border-bottom: 2px solid var(--border); }
+  .tbl td { padding: 10px 14px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  .tbl tr:last-child td { border-bottom: none; }
+  .tbl-wrap { overflow-x: auto; }
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; white-space: nowrap; }
+  .b-blue   { background: var(--accent-light); color: var(--accent); }
+  .b-green  { background: var(--green-bg); color: var(--green); border: 1px solid var(--green-border); }
+  .b-yellow { background: var(--yellow-bg); color: var(--yellow); border: 1px solid var(--yellow-border); }
+  .b-purple { background: var(--purple-bg); color: var(--purple); border: 1px solid var(--purple-border); }
+  .b-gray   { background: #f1f5f9; color: #64748b; border: 1px solid #e2e8f0; }
+
+  /* ── Misc ── */
+  p { margin-bottom: 10px; }
+  p:last-child { margin-bottom: 0; }
+  ul, ol { padding-left: 22px; margin-bottom: 10px; }
+  li { margin-bottom: 5px; }
+  strong { font-weight: 700; }
+  hr { border: none; border-top: 1px solid var(--border); margin: 24px 0; }
+  .ic { font-family: 'Cascadia Code', 'Fira Code', Consolas, monospace; background: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 4px; padding: 1px 6px; font-size: 12.5px; color: #1e40af; }
+
+  /* ── Mission scope chips ── */
+  .missions { display: flex; flex-wrap: wrap; gap: 8px; }
+  .mission {
+    display: flex; align-items: center; gap: 7px;
+    padding: 7px 12px; border-radius: 7px; font-size: 12.5px;
+    border: 1px solid var(--border); background: #f8fafc; color: var(--text-secondary);
+  }
+  .mission .m-num { font-weight: 800; font-size: 11px; color: #94a3b8; }
+  .mission.in-scope { background: var(--accent-light); border-color: #93c5fd; color: var(--accent); font-weight: 700; }
+  .mission.in-scope .m-num { color: var(--accent); }
+
+  /* ── Diagnosis flow steps ── */
+  .flow-card { display: flex; gap: 18px; }
+  .flow-card .step-circle { background: var(--green); font-size: 16px; }
+  .flow-card .flow-body { flex: 1; min-width: 0; }
+  .flow-card h3 { font-size: 15px; margin-bottom: 3px; }
+  .flow-caption { font-size: 12.5px; color: var(--text-secondary); margin-bottom: 12px; }
+  .agree-box {
+    margin-top: 12px; padding: 11px 15px; border-radius: 7px;
+    background: var(--purple-bg); border: 1px solid var(--purple-border);
+    font-size: 12.5px; color: #4c1d95; display: flex; gap: 8px;
+  }
+  .agree-box strong { color: var(--purple); white-space: nowrap; }
+
+  /* ── System diagram ── */
+  .sys-diagram { text-align: center; padding: 20px 10px 6px; }
+  .sys-node-top {
+    display: inline-block; padding: 9px 22px; border-radius: 8px;
+    background: var(--header-bg); color: #fff; font-weight: 700; font-size: 13.5px;
+  }
+  .sys-branch { display: flex; justify-content: center; gap: 44px; margin: 26px 0 14px; position: relative; }
+  .sys-branch::before { content: ""; position: absolute; top: -16px; left: 18%; right: 18%; height: 1px; background: var(--border); }
+  .sys-user { display: flex; flex-direction: column; align-items: center; gap: 8px; font-size: 12.5px; color: var(--text-secondary); position: relative; }
+  .sys-user::before { content: ""; position: absolute; top: -16px; width: 1px; height: 16px; background: var(--border); }
+  .sys-user .avatar {
+    width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--border);
+    background: #f8fafc; display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 12.5px; color: var(--text-primary);
+  }
+  .sys-bottom { display: inline-block; padding: 7px 18px; border: 1px dashed #cbd5e1; border-radius: 7px; font-size: 12px; color: var(--text-secondary); }
+
+  /* ── Knowledge layers ── */
+  .layer-row { display: flex; gap: 14px; align-items: flex-start; padding: 13px 0; border-bottom: 1px solid var(--border); }
+  .layer-row:last-child { border-bottom: none; }
+  .layer-row .l-num {
+    width: 30px; height: 30px; border-radius: 7px; background: var(--accent-light); color: var(--accent);
+    display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 13px; flex-shrink: 0;
+  }
+  .layer-row h4 { margin: 0 0 2px; font-size: 13.5px; }
+  .layer-row p { margin: 0; font-size: 12.5px; color: var(--text-secondary); }
+
+  /* ── Expansion tool cards (Ch.13) ── */
+  .exp-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+  @media (max-width: 760px) { .exp-grid { grid-template-columns: 1fr; } }
+  .exp-card { border: 1px solid var(--border); border-radius: 9px; padding: 16px 18px; background: #f8fafc; }
+  .exp-card .exp-head { display: flex; align-items: center; gap: 9px; margin-bottom: 6px; }
+  .exp-card .exp-mission-num {
+    width: 24px; height: 24px; border-radius: 50%; background: var(--purple-bg); color: var(--purple);
+    display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 800; flex-shrink: 0;
+  }
+  .exp-card .exp-mission-name { font-size: 11px; color: var(--text-secondary); letter-spacing: .02em; }
+  .exp-card h4 { font-size: 13.5px; margin-bottom: 6px; }
+  .exp-card p { font-size: 12.5px; color: var(--text-secondary); margin-bottom: 8px; }
+  .exp-card .exp-reuse { font-size: 11.5px; color: var(--green); display: flex; gap: 5px; }
+  .exp-card .exp-reuse::before { content: "↻"; }
+
+  @media (max-width: 800px) {
+    .sidebar { display: none; }
+    .main { margin-left: 0; }
+    .page-header, .content { padding: 24px 20px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrapper">
+
+<nav class="sidebar">
+  <div class="sidebar-header">
+    <div class="sidebar-label">Requirements &amp; Design Doc</div>
+    <div class="sidebar-title">マーケティングAIダッシュボード<br>要件定義書 兼 設計書</div>
+    <div class="sidebar-meta">①マーケティング診断 スコープ確定版</div>
+  </div>
+  <div class="sidebar-nav">
+    <div class="nav-group">概要</div>
+    <a class="nav-item" href="#ch1"><span class="nav-badge">1</span> プロジェクトの本質</a>
+    <a class="nav-item" href="#ch2"><span class="nav-badge">2</span> スコープ定義</a>
+
+    <div class="nav-group">診断設計</div>
+    <a class="nav-item" href="#ch3"><span class="nav-badge">3</span> 診断アウトプット設計</a>
+    <a class="nav-item" href="#ch4"><span class="nav-badge">4</span> ヒアリングシート</a>
+    <a class="nav-item" href="#ch5"><span class="nav-badge">5</span> KPI設計</a>
+    <a class="nav-item" href="#ch6"><span class="nav-badge">6</span> データ共有依頼リスト</a>
+
+    <div class="nav-group">システム設計</div>
+    <a class="nav-item" href="#ch7"><span class="nav-badge">7</span> システム全体構成</a>
+    <a class="nav-item" href="#ch8"><span class="nav-badge">8</span> ナレッジの3階層構造</a>
+    <a class="nav-item" href="#ch9"><span class="nav-badge">9</span> Facts と Knowledge</a>
+
+    <div class="nav-group">開発計画</div>
+    <a class="nav-item" href="#ch10"><span class="nav-badge">10</span> ナレッジを育てる仕組み</a>
+    <a class="nav-item" href="#ch11"><span class="nav-badge">11</span> 開発ロードマップ</a>
+    <a class="nav-item" href="#ch12"><span class="nav-badge">12</span> 未確定事項</a>
+
+    <div class="nav-group">将来展望</div>
+    <a class="nav-item" href="#ch13"><span class="nav-badge">13</span> 拡張ツール構想</a>
+  </div>
+</nav>
+
+<main class="main">
+  <div class="page-header">
+    <div class="page-header-label">Requirements &amp; Design Document</div>
+    <h1>マーケティングAIダッシュボード</h1>
+    <div class="page-header-desc">
+      ほりの式マーケティング自走化プログラム　ミッション①「マーケティング診断」のためのAI診断ツール。<br>
+      要件定義書 兼 設計書として、スコープ・診断アウトプット様式・システム構成をまとめています。
+    </div>
+    <div class="page-header-meta">
+      <span><strong>作成日：</strong>2026年7月22日</span>
+      <span><strong>対象読者：</strong>堀野様（ほりのさん）／ 開発チーム</span>
+      <span><strong>ステータス：</strong>スコープ・アウトプット様式 確定</span>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- 1 -->
+    <section class="section" id="ch1">
+      <div class="section-header">
+        <div class="step-circle" style="background:#475569;">1</div>
+        <div><h2>プロジェクトの本質</h2><div class="sub">このツールが目指す価値</div></div>
+      </div>
+      <div class="card">
+        <p>このツールの価値は「AIが賢い診断をする」ことではありません。<strong>「会社の知識が、使うほどに資産として積み上がっていく」</strong>ことにあります。</p>
+        <p>コンサルタント一人ひとりの頭の中にあるノウハウ・判断基準を会社の共有資産として蓄積し、誰が診断しても同じ品質の判断ができる状態をつくります。ナレッジが増えるほど診断の精度が上がっていく、いわば「成長する診断ツール」です。</p>
+        <ul>
+          <li>コンサル各自の暗黙知を、会社の明示的な資産に変換する</li>
+          <li>全員が同じ判断基準で診断できる（属人化の解消）</li>
+          <li>ナレッジをNotionに集約することで、アプリを更新しなくても全員の診断品質が翌日には向上する</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 2 -->
+    <section class="section" id="ch2">
+      <div class="section-header">
+        <div class="step-circle">2</div>
+        <div><h2>スコープ定義</h2><div class="sub">12ミッションのうち、どこを対象とするか</div></div>
+      </div>
+      <div class="card">
+        <h3>ほりの式マーケティング自走化プログラム（180日・12ミッション）</h3>
+        <p>本ツールは、そのうち<strong>ミッション①「マーケティング診断」専用</strong>です。</p>
+        <div class="missions">
+          <div class="mission in-scope"><span class="m-num">01</span>マーケティング診断</div>
+          <div class="mission"><span class="m-num">02</span>競合・市場リサーチ</div>
+          <div class="mission"><span class="m-num">03</span>ターゲット戦略設計</div>
+          <div class="mission"><span class="m-num">04</span>ペルソナ＆CJM策定</div>
+          <div class="mission"><span class="m-num">05</span>商品コンセプト</div>
+          <div class="mission"><span class="m-num">06</span>ゴール＆KPI設計</div>
+          <div class="mission"><span class="m-num">07</span>集客チャネル設計</div>
+          <div class="mission"><span class="m-num">08</span>データ活用（GA4）</div>
+          <div class="mission"><span class="m-num">09</span>CVR改善</div>
+          <div class="mission"><span class="m-num">10</span>マーケティング組織構築</div>
+          <div class="mission"><span class="m-num">11</span>オペレーション改善</div>
+          <div class="mission"><span class="m-num">12</span>事業戦略＆年間計画策定</div>
+        </div>
+      </div>
+      <div class="card">
+        <h3>無料相談との対応関係</h3>
+        <p>契約フローは <strong>資料DL → 無料相談（1時間・課題ヒアリング）→ 契約 → プロジェクト開始</strong>。ミッション①は、この<strong>無料相談に相当</strong>します。</p>
+        <div class="callout warn">
+          <span class="callout-icon">⚠️</span>
+          <div><strong>設計上の重要な前提：</strong>無料相談の段階では、クライアントから全データを預かることはできません。したがって①の役割は、②〜⑫の本格分析（データ接続後）に進む前の、<strong>仮説レベルでの課題発見</strong>です。取得できるデータの範囲に応じた診断精度であることを、あらかじめ双方で合意しておく必要があります。</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3 -->
+    <section class="section" id="ch3">
+      <div class="section-header">
+        <div class="step-circle" style="background:var(--green);">3</div>
+        <div><h2>診断アウトプット設計</h2><div class="sub">無料診断の成果物は3部構成</div></div>
+      </div>
+
+      <div class="card flow-card">
+        <div class="step-circle" style="background:var(--green);">Ⅰ</div>
+        <div class="flow-body">
+          <h3>事実の整理</h3>
+          <div class="flow-caption">現状を客観的なデータで揃える。まだ評価・提言はしない。</div>
+          <ul>
+            <li>自社紹介、診断についての概要説明</li>
+            <li>ヒアリングシート回答のサマリー整理</li>
+            <li>GA4・Search Console・Dockpit等の関連データ分析（画面キャプチャ＋コメント、目安10ページ程度）</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card flow-card">
+        <div class="step-circle" style="background:var(--green);">Ⅱ</div>
+        <div class="flow-body">
+          <h3>診断</h3>
+          <div class="flow-caption">事実をもとに、プロの視点で現状と目標のギャップを評価する。</div>
+          <ul>
+            <li>現状と目標のギャップ（As-Is／To-Be）</li>
+            <li>診断サマリー（プロ視点の初見と方向性）</li>
+            <li>5軸評価：<strong>戦略</strong>（勝ち筋・競合差別化）／<strong>商品</strong>（コンセプトと伝え方のギャップ）／<strong>設計</strong>（認知〜購入〜LTVのファネル・ボトルネック）／<strong>体制</strong>（社内外リソース）／<strong>データ</strong>（データ基盤・活用度）</li>
+            <li>課題整理シート（重要度×実行しやすさで優先課題トップ3を分類）</li>
+            <li>期待値シミュレーション（1年後の理想状態）</li>
+          </ul>
+          <div class="agree-box"><strong>合意ポイント</strong><span>目標・課題認識の合意 → 優先課題の合意 → 期待値（実現できたら嬉しいか／放置したらどうなるか）の合意</span></div>
+        </div>
+      </div>
+
+      <div class="card flow-card">
+        <div class="step-circle" style="background:var(--green);">Ⅲ</div>
+        <div class="flow-body">
+          <h3>改善提案</h3>
+          <div class="flow-caption">診断結果を、実行可能な提案とプロジェクトの意思決定に落とし込む。</div>
+          <ul>
+            <li>達成に向けた年間ロードマップ</li>
+            <li>成功のための条件（期待値のすり合わせ：丸投げでは進まない、等）</li>
+            <li><strong>90日おためしプロジェクト</strong>：最短で小さな成果をつくる伴走支援（3ヶ月・150万円）</li>
+            <li>詳細内容：月2回MTG、プロジェクト進行管理、宿題、数値管理など</li>
+            <li>次の意思決定と開始手順</li>
+          </ul>
+          <div class="agree-box"><strong>合意ポイント</strong><span>自社対応が難しい領域の合意（責任者を誰にするか）→ お試し導入の合意 → 最終判断・懸念点の確認</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4 -->
+    <section class="section" id="ch4">
+      <div class="section-header">
+        <div class="step-circle" style="background:var(--green);">4</div>
+        <div><h2>ヒアリングシート</h2><div class="sub">「事実の整理」フェーズのインプット、18項目</div></div>
+      </div>
+      <div class="card">
+        <div class="tbl-wrap">
+        <table class="tbl">
+          <thead><tr><th style="width:22%">区分</th><th>質問内容</th></tr></thead>
+          <tbody>
+            <tr><td>診断対象</td><td>今回、診断対象とする事業・商品・サービス（複数ある場合は最優先のもの）</td></tr>
+            <tr><td>事業概要</td><td>対象事業の売上規模、顧客数、主な販売方法（概算で可）</td></tr>
+            <tr><td>収益モデル</td><td>対象事業の収益モデルに近いもの</td></tr>
+            <tr><td>目標</td><td>1年後に実現したい状態（売上・利益・顧客数・継続率など）</td></tr>
+            <tr><td>現在の課題</td><td>目標達成のうえで優先的に解決すべき課題を3つ</td></tr>
+            <tr><td>商品説明</td><td>初めて知る見込み客向けに、商品・サービスを300文字以内で説明</td></tr>
+            <tr><td>顧客課題</td><td>「誰の、どのような悩みを、どのように解決する商品か」を一文で</td></tr>
+            <tr><td>選ばれる理由</td><td>顧客が競合ではなく自社を選ぶ最大の理由</td></tr>
+            <tr><td>競合企業</td><td>ベンチマークしている競合企業を3つ</td></tr>
+            <tr><td>優良顧客</td><td>売上・利益への貢献が大きく、今後も増やしたい顧客像</td></tr>
+            <tr><td>購買障壁</td><td>購入・契約前に感じる不安、比較対象</td></tr>
+            <tr><td>購買導線</td><td>認知〜問い合わせ・購入・契約までの主な流れ</td></tr>
+            <tr><td>過去の施策</td><td>過去2〜3年で実施したが成果が出なかった／途中で止めた施策</td></tr>
+            <tr><td>成功施策</td><td>最も成果が出た施策と、その理由</td></tr>
+            <tr><td>社内体制</td><td>マーケティング・営業に関わる社内メンバーと役割</td></tr>
+            <tr><td>外部パートナー</td><td>現在依頼している外部パートナーと担当範囲</td></tr>
+            <tr><td>意思決定</td><td>施策の優先順位・予算を最終決定する人</td></tr>
+            <tr><td>制約条件</td><td>改善を進めるうえで事前に把握すべき制約</td></tr>
+            <tr><td>改善意向</td><td>優先課題と改善可能性が明確になった場合、外部支援も含め改善を進める意向はあるか</td></tr>
+          </tbody>
+        </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5 -->
+    <section class="section" id="ch5">
+      <div class="section-header">
+        <div class="step-circle" style="background:var(--green);">5</div>
+        <div><h2>KPI設計</h2><div class="sub">ビジネスモデルに応じて2種類を切り替える</div></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+        <div class="card" style="margin-bottom:0;">
+          <h3>契約継続型 <span class="badge b-blue">サブスク・継続契約向け</span></h3>
+          <ul>
+            <li>新規契約・初回購入数（月間・年間）</li>
+            <li>初回から本契約への引き上げ率</li>
+            <li>月次・年次継続率／解約率</li>
+            <li>平均継続期間</li>
+            <li>顧客単価（月額・年間）</li>
+            <li>LTV</li>
+            <li>投資回収期間</li>
+            <li>追加購入・アップセル率</li>
+            <li>休眠顧客数</li>
+          </ul>
+        </div>
+        <div class="card" style="margin-bottom:0;">
+          <h3>Web集客型 <span class="badge b-green">リード獲得・商談型向け</span></h3>
+          <ul>
+            <li>Webサイト訪問数（月間・年間）</li>
+            <li>問い合わせ・資料請求数（月間・年間）</li>
+            <li>商談数／成約数（月間・年間）</li>
+            <li>問い合わせ率／商談化率／成約率</li>
+            <li>平均客単価</li>
+            <li>新規顧客獲得単価</li>
+            <li>粗利率</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6 -->
+    <section class="section" id="ch6">
+      <div class="section-header">
+        <div class="step-circle" style="background:var(--green);">6</div>
+        <div><h2>データ共有依頼リスト</h2><div class="sub">診断精度を高めるための任意共有項目</div></div>
+      </div>
+      <div class="card">
+        <div class="tbl-wrap">
+        <table class="tbl">
+          <thead><tr><th style="width:20%">分類</th><th>共有をお願いするもの</th><th style="width:22%">対象期間</th></tr></thead>
+          <tbody>
+            <tr><td>GA4</td><td>GA4の閲覧権限</td><td>直近12か月</td></tr>
+            <tr><td>Search Console</td><td>閲覧権限または検索レポート</td><td>直近12か月</td></tr>
+            <tr><td>ヒートマップ</td><td>LPなどのヒートマップデータ</td><td>直近12か月</td></tr>
+            <tr><td>売上</td><td>月別売上、粗利、顧客数、受注件数</td><td>直近12か月</td></tr>
+            <tr><td>広告</td><td>媒体別広告費、CV、CPA</td><td>直近12か月</td></tr>
+            <tr><td>サービス資料</td><td>商品資料、価格表、商品別売上構成</td><td>最新版</td></tr>
+            <tr><td>顧客の声</td><td>レビュー、アンケート、お礼メール、導入事例</td><td>10件以上が理想</td></tr>
+            <tr><td>営業資料</td><td>営業資料、提案書、トークスクリプト</td><td>最新版</td></tr>
+            <tr><td>失注・解約分析</td><td>失注理由、解約理由、問い合わせ内容</td><td>直近6〜12か月</td></tr>
+            <tr><td>過去施策</td><td>過去の改善提案書、レポート、計画書</td><td>直近2〜3年</td></tr>
+            <tr><td>体制図</td><td>社内体制図、外部パートナー一覧</td><td>現在</td></tr>
+          </tbody>
+        </table>
+        </div>
+        <div class="callout info" style="margin-top:14px;">
+          <span class="callout-icon">ℹ️</span>
+          <div>いずれも任意項目です。無料相談段階でどこまで揃うかが、①の診断精度を左右します。</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 7 -->
+    <section class="section" id="ch7">
+      <div class="section-header">
+        <div class="step-circle">7</div>
+        <div><h2>システム全体構成</h2><div class="sub">Notion共通ナレッジ ＋ 各ユーザーのローカルアプリ</div></div>
+      </div>
+      <div class="card">
+        <div class="sys-diagram">
+          <div class="sys-node-top">Notion（共通ナレッジ）</div>
+          <div class="sys-branch">
+            <div class="sys-user"><div class="avatar">社</div>社長PC</div>
+            <div class="sys-user"><div class="avatar">A</div>コンサルA</div>
+            <div class="sys-user"><div class="avatar">B</div>コンサルB</div>
+          </div>
+          <div class="sys-bottom">↓ 各PC上で AI診断ダッシュボード が稼働</div>
+        </div>
+        <ul style="margin-top:20px;">
+          <li>ナレッジのみNotion上で全員共通、アプリ本体は各PCのローカル環境</li>
+          <li>誰かがナレッジを追加すると、翌日には全員の診断に反映される（アプリの更新は不要）</li>
+          <li>他社へ展開する場合も、ナレッジ（Notion側）を差し替えるだけで済む設計</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 8 -->
+    <section class="section" id="ch8">
+      <div class="section-header">
+        <div class="step-circle">8</div>
+        <div><h2>ナレッジの3階層構造</h2><div class="sub">AIは①→②→③の順で診断に活用する</div></div>
+      </div>
+      <div class="card">
+        <div class="layer-row">
+          <div class="l-num">①</div>
+          <div><h4>共通マーケティング知識</h4><p>SEO・広告・GA4・CVR・KPIなど、業界一般の知識</p></div>
+        </div>
+        <div class="layer-row">
+          <div class="l-num">②</div>
+          <div><h4>コンサルタント固有の型（ほりの式）</h4><p>判断基準・考え方・成功事例・NG例</p></div>
+        </div>
+        <div class="layer-row">
+          <div class="l-num">③</div>
+          <div><h4>会社独自のノウハウ</h4><p>案件・商品・過去提案・顧客情報</p></div>
+        </div>
+      </div>
+      <div class="card">
+        <p>Notion側に「ステータス」を持たせ、AIが診断に使うのは<strong>「承認済み」</strong>のもののみとします。商談直後のアイデアや未検証の仮説（下書き／レビュー中）が、そのまま診断品質に影響することを防ぎます。</p>
+        <div style="display:flex;gap:8px;margin-top:10px;">
+          <span class="badge b-gray">下書き</span>
+          <span class="badge b-yellow">レビュー中</span>
+          <span class="badge b-green">承認済み（診断に使用）</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- 9 -->
+    <section class="section" id="ch9">
+      <div class="section-header">
+        <div class="step-circle">9</div>
+        <div><h2>Facts と Knowledge の分離</h2><div class="sub">クライアント固有の「事実」と汎用的な「知識」を分ける</div></div>
+      </div>
+      <div class="card">
+        <div class="tbl-wrap">
+        <table class="tbl">
+          <thead><tr><th style="width:24%">種別</th><th style="width:20%">保存先</th><th>内容</th></tr></thead>
+          <tbody>
+            <tr><td>Facts（事実）</td><td>SQLite（ローカル）</td><td>顧客データ・APIデータ・診断履歴・KPI実測値</td></tr>
+            <tr><td>Knowledge（知識）</td><td>Notion（共通）</td><td>診断基準・改善方法・成功事例・ノウハウ</td></tr>
+          </tbody>
+        </table>
+        </div>
+        <div class="callout danger" style="margin-top:14px;">
+          <span class="callout-icon">🔒</span>
+          <div><strong>Notionには顧客の生データを一切保存しません。</strong>判断基準はシンプルです ―― 「株式会社AのCVRは1.5%」はただの事実（Facts）、「CVR2%以下なら広告よりLP改善を優先する」はナレッジ（Knowledge）です。</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 10 -->
+    <section class="section" id="ch10">
+      <div class="section-header">
+        <div class="step-circle" style="background:var(--purple);">10</div>
+        <div><h2>ナレッジを育てる仕組み</h2><div class="sub">商談メモ・議事録をAIが判断基準として整形する</div></div>
+      </div>
+      <div class="card">
+        <p>開発時は、これまで蓄積された商談データ・提案資料・成功事例をAIでナレッジ化し初期資産を構築します。運用開始後は、ダッシュボードの「ナレッジ登録機能」から新しい商談・成功事例を継続的に追加します。</p>
+        <p>未検証の仮説がそのまま正式なナレッジになることを防ぐため、Notionへ直接登録せず<strong>「知識候補」としてSQLiteに一度保存 → 人が承認 → Notion正式ナレッジ</strong>というワンクッションを設けます。</p>
+        <ul>
+          <li>商談メモ・議事録・提案書・成功事例・失敗事例を入力</li>
+          <li>AIが判断基準・成功パターンを抽出し、構造化</li>
+          <li>人が内容を確認・承認</li>
+          <li>承認されたものだけがNotionへ登録</li>
+        </ul>
+        <div class="callout note">
+          <span class="callout-icon">📈</span>
+          <div>例：7月ナレッジ100件 → 8月120件 → 9月150件。蓄積されるほど診断品質も自然に向上します。</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 11 -->
+    <section class="section" id="ch11">
+      <div class="section-header">
+        <div class="step-circle" style="background:var(--purple);">11</div>
+        <div><h2>開発ロードマップ</h2><div class="sub">分析対象データ未確定でも着手できる工程から優先</div></div>
+      </div>
+
+      <div class="card">
+        <h3>Phase 0-2　基盤・初期ナレッジ・登録機能</h3>
+        <div class="tbl-wrap">
+        <table class="tbl">
+          <tbody>
+            <tr><td>Notion DB／SQLite設計・実装</td><td>3階層＋承認ステータス、facts/diagnoses等のテーブル</td><td style="width:90px"><span class="badge b-green">完了</span></td></tr>
+            <tr><td>既存資産の棚卸し・AIナレッジ化</td><td>過去の商談データ・提案資料・議事録をAIで構造化</td><td><span class="badge b-blue">進行中</span></td></tr>
+            <tr><td>ナレッジ登録UI・承認フロー</td><td>入力 → AI構造化 → レビュー → 承認 → Notion登録</td><td><span class="badge b-green">完了</span></td></tr>
+          </tbody>
+        </table>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Phase 3-4　Facts収集・AI診断エンジン</h3>
+        <div class="tbl-wrap">
+        <table class="tbl">
+          <tbody>
+            <tr><td>分析対象クライアント・APIの確定</td><td>どの案件から着手するか、優先データソースの決定</td><td style="width:90px"><span class="badge b-yellow">要決定</span></td></tr>
+            <tr><td>API連携実装（GA4等）</td><td>各APIからのデータ取得・facts保存</td><td><span class="badge b-gray">未着手</span></td></tr>
+            <tr><td>診断ロジック設計・実装</td><td>Facts＋ナレッジの組み合わせ、スコア算出・改善案生成</td><td><span class="badge b-gray">未着手</span></td></tr>
+          </tbody>
+        </table>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Phase 5-7　自動化・拡張・将来対応</h3>
+        <div class="tbl-wrap">
+        <table class="tbl">
+          <tbody>
+            <tr><td>知識候補DB運用・診断からの自動提案</td><td>診断結果からAIが知識候補を自動提示、承認でNotionへ反映</td><td style="width:90px"><span class="badge b-gray">未着手</span></td></tr>
+            <tr><td>認証方式・対象デバイス・デプロイ先</td><td>複数コンサルの利用を想定した基盤整備</td><td><span class="badge b-yellow">検討中</span></td></tr>
+            <tr><td>施策実行管理・効果測定（PDCA拡張）</td><td>action_itemsテーブル設計のみ準備済み</td><td><span class="badge b-gray">対象外</span></td></tr>
+          </tbody>
+        </table>
+        </div>
+      </div>
+
+      <div class="callout info">
+        <span class="callout-icon">➡️</span>
+        <div><strong>次の一手：</strong>診断アウトプット様式（3章）が確定したことで、Notion DB・診断ダッシュボードのカテゴリ構造をこの設計に合わせて再編できる段階に入りました。並行して、「分析対象クライアント・APIの確定」が次のボトルネックです。</div>
+      </div>
+    </section>
+
+    <!-- 12 -->
+    <section class="section" id="ch12">
+      <div class="section-header">
+        <div class="step-circle" style="background:var(--yellow);">12</div>
+        <div><h2>未確定事項</h2><div class="sub">検討中・要決定の項目</div></div>
+      </div>
+      <div class="card">
+        <div class="tbl-wrap">
+        <table class="tbl">
+          <thead><tr><th>項目</th><th style="width:100px">優先度</th><th>状況</th></tr></thead>
+          <tbody>
+            <tr><td>対象デバイス（PC／スマホ対応）</td><td><span class="badge b-gray">中</span></td><td>未定</td></tr>
+            <tr><td>認証方式</td><td><span class="badge b-gray">中</span></td><td>未定</td></tr>
+            <tr><td>デプロイ先</td><td><span class="badge b-gray">中</span></td><td>未定</td></tr>
+            <tr><td>AI分析に使用するモデル</td><td><span class="badge b-gray">中</span></td><td>社内モデル選定ルールに沿って検討中</td></tr>
+            <tr><td>分析対象クライアント・優先APIの確定</td><td><span class="badge b-yellow">高</span></td><td>Phase3の着手条件、要決定</td></tr>
+            <tr><td>Notion APIレート制限を考慮したキャッシュ方針</td><td><span class="badge b-gray">低</span></td><td>診断のたびに全件取得 or 定期同期、未定</td></tr>
+          </tbody>
+        </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- 13 -->
+    <section class="section" id="ch13">
+      <div class="section-header">
+        <div class="step-circle" style="background:var(--purple);">13</div>
+        <div><h2>拡張ツール構想</h2><div class="sub">①の基盤が②〜⑫でどう活きるか（一例）</div></div>
+      </div>
+      <div class="card">
+        <p>①で構築するNotionナレッジ基盤・診断エンジンは、②〜⑫の他ミッションでも活用できる設計です。参考として、各ミッションでどのような支援ツールが考えられるか、方向性の一例を整理しました。</p>
+      </div>
+
+      <div class="exp-grid">
+        <div class="exp-card">
+          <div class="exp-head"><span class="exp-mission-num">②</span><span class="exp-mission-name">競合・市場リサーチ</span></div>
+          <h4>競合リサーチAI</h4>
+          <p>競合サイト・広告・SNSを定点観測し、3C分析のドラフトを自動生成。変化があった際は差分をアラート。</p>
+          <div class="exp-reuse">再利用：ナレッジDBの①共通知識層</div>
+        </div>
+        <div class="exp-card">
+          <div class="exp-head"><span class="exp-mission-num">③</span><span class="exp-mission-name">ターゲット戦略設計</span></div>
+          <h4>STP設計支援AI</h4>
+          <p>ヒアリングシートの回答と①の診断結果から、優先すべきターゲットセグメントの仮説を提示する。</p>
+          <div class="exp-reuse">再利用：ヒアリングシート18項目・診断エンジン</div>
+        </div>
+        <div class="exp-card">
+          <div class="exp-head"><span class="exp-mission-num">④</span><span class="exp-mission-name">ペルソナ＆CJM策定</span></div>
+          <h4>ペルソナ生成AI</h4>
+          <p>実インタビューの音声・議事録の文字起こしから、ペルソナとカスタマージャーニーマップを自動構築する。</p>
+          <div class="exp-reuse">再利用：議事録のナレッジ化パイプライン</div>
+        </div>
+        <div class="exp-card">
+          <div class="exp-head"><span class="exp-mission-num">⑤</span><span class="exp-mission-name">商品コンセプト</span></div>
+          <h4>コンセプト診断AI</h4>
+          <p>「顧客の声」と「自社が考える強み」を突き合わせ、伝わっていない訴求・ズレを可視化する。</p>
+          <div class="exp-reuse">再利用：③会社独自ノウハウ層</div>
+        </div>
+        <div class="exp-card">
+          <div class="exp-head"><span class="exp-mission-num">⑥</span><span class="exp-mission-name">ゴール＆KPI設計</span></div>
+          <h4>KPI逆算シミュレーターAI</h4>
+          <p>契約継続型／Web集客型のKPIテンプレートを軸に、1年後の目標から逆算した月次試算を自動生成する。</p>
+          <div class="exp-reuse">再利用：本ツールのKPI設計（5章）</div>
+        </div>
+        <div class="exp-card">
+          <div class="exp-head"><span class="exp-mission-num">⑦</span><span class="exp-mission-name">集客チャネル設計</span></div>
+          <h4>チャネル配分AI</h4>
+          <p>媒体別ベンチマークと蓄積ナレッジから、広告予算の最適配分・優先チャネルを提案する。</p>
+          <div class="exp-reuse">再利用：広告運用ナレッジの蓄積知見</div>
+        </div>
+        <div class="exp-card">
+          <div class="exp-head"><span class="exp-mission-num">⑧</span><span class="exp-mission-name">データ活用（GA4）</span></div>
+          <h4>GA4連携診断ダッシュボード</h4>
+          <p>①で土台実装するGA4連携を本格稼働させ、継続的なデータドリブン診断を実現する。</p>
+          <div class="exp-reuse">再利用：GA4連携基盤</div>
+        </div>
+        <div class="exp-card">
+          <div class="exp-head"><span class="exp-mission-num">⑨</span><span class="exp-mission-name">CVR改善</span></div>
+          <h4>LP／CVR改善提案AI</h4>
+          <p>LPコピー・クリエイティブを診断し、A/Bテスト設計案を提示。検証結果はナレッジとして再蓄積される。</p>
+          <div class="exp-reuse">再利用：LP・クリエイティブ運用ナレッジ</div>
+        </div>
+        <div class="exp-card">
+          <div class="exp-head"><span class="exp-mission-num">⑩</span><span class="exp-mission-name">マーケティング組織構築</span></div>
+          <h4>体制診断AI</h4>
+          <p>業務ごとの内製・外注の適正を診断し、判断のブレを防ぐ。</p>
+          <div class="exp-reuse">再利用：③会社独自ノウハウ層</div>
+        </div>
+        <div class="exp-card">
+          <div class="exp-head"><span class="exp-mission-num">⑪</span><span class="exp-mission-name">オペレーション改善</span></div>
+          <h4>オペレーション診断AI</h4>
+          <p>業務フロー・進行管理上のボトルネックを、既存の診断ロジックを応用して洗い出す。</p>
+          <div class="exp-reuse">再利用：As-Is/To-Be評価ロジック</div>
+        </div>
+        <div class="exp-card">
+          <div class="exp-head"><span class="exp-mission-num">⑫</span><span class="exp-mission-name">事業戦略＆年間計画策定</span></div>
+          <h4>年間計画ドラフト生成AI</h4>
+          <p>②〜⑪の診断結果を統合し、年間ロードマップの初稿を自動生成。12ミッション全体の集大成となるツール。</p>
+          <div class="exp-reuse">再利用：診断履歴データ全体</div>
+        </div>
+      </div>
+
+      <div class="callout note" style="margin-top:16px;">
+        <span class="callout-icon">🌱</span>
+        <div><strong>基盤の考え方：</strong>どのツールも「Notionナレッジ基盤」「診断エンジン」「ヒアリング・KPI設計」という①の共通土台の上に載る設計です。ミッションが進むごとにナレッジが積み上がっていくため、後続ツールほど立ち上がりが早く、診断の精度も高まっていきます。</div>
+      </div>
+    </section>
+
+  </div><!-- /content -->
+</main>
+</div>
+
+<script>
+  const sections = document.querySelectorAll('section[id]');
+  const navItems = document.querySelectorAll('.nav-item[href^="#"]');
+  window.addEventListener('scroll', () => {
+    let current = '';
+    sections.forEach(s => { if (window.scrollY >= s.offsetTop - 80) current = s.id; });
+    navItems.forEach(i => i.classList.toggle('active', i.getAttribute('href') === '#' + current));
+  }, { passive: true });
+  navItems.forEach(i => i.addEventListener('click', function() {
+    navItems.forEach(j => j.classList.remove('active'));
+    this.classList.add('active');
+  }));
+</script>
+</body>
+</html>
