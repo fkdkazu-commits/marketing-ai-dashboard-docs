@@ -564,6 +564,16 @@
           <div>例：7月ナレッジ100件 → 8月120件 → 9月150件。蓄積されるほど診断品質も自然に向上します。</div>
         </div>
       </div>
+
+      <div class="card">
+        <h3>診断エンジンの原則：登録済みナレッジのみに基づく（2026-07-24確定）</h3>
+        <p>AI診断は、GA4等の実績データ（事実）を根拠にすることは問題ありませんが、そこからの<strong>解釈・示唆・改善提案は必ず登録済みナレッジの範囲内</strong>で生成します。一般的なマーケティングの定石やベストプラクティスで内容を穴埋めすることはしません。これは、診断結果を「AIの一般論」ではなく「コンサルタント固有のノウハウ（ほりの式）」に忠実なものにするための設計判断です。</p>
+        <p>ある軸・項目について該当する登録済みナレッジが不足している場合、AIは一般知識で埋めずに<strong>「ナレッジ不足」として正直に申告</strong>します。診断レポート画面には「ナレッジ不足の項目」一覧が表示され、どの観点のノウハウがまだ登録されていないかが一目で分かります。</p>
+        <div class="callout info">
+          <span class="callout-icon">🔁</span>
+          <div><strong>フィードバックループ：</strong>診断結果の「ナレッジ不足」表示 → 該当する判断基準・ノウハウをナレッジ登録機能で追加 → 次回診断で活用率が向上、という循環になっています。診断そのものが「次に何を言語化・登録すべきか」を教えてくれる仕組みです。</div>
+        </div>
+      </div>
     </section>
 
     <!-- 11 -->
@@ -591,9 +601,9 @@
         <div class="tbl-wrap">
         <table class="tbl">
           <tbody>
-            <tr><td>分析対象クライアント・APIの確定</td><td>どの案件から着手するか、優先データソースの決定</td><td style="width:90px"><span class="badge b-yellow">要決定</span></td></tr>
-            <tr><td>API連携実装（GA4等）</td><td>各APIからのデータ取得・facts保存</td><td><span class="badge b-gray">未着手</span></td></tr>
-            <tr><td>診断ロジック設計・実装</td><td>Facts＋ナレッジの組み合わせ、スコア算出・改善案生成</td><td><span class="badge b-gray">未着手</span></td></tr>
+            <tr><td>分析対象クライアント・APIの確定</td><td>モノラボファクトリー様でGA4連携・診断を先行実施。他クライアントへの展開は順次</td><td style="width:90px"><span class="badge b-blue">進行中</span></td></tr>
+            <tr><td>API連携実装（GA4等）</td><td>GA4 Data APIからのデータ取得・facts保存</td><td><span class="badge b-green">完了</span></td></tr>
+            <tr><td>診断ロジック設計・実装</td><td>Facts＋軸別ナレッジの組み合わせ、5軸スコア算出・ギャップ分析・改善提案生成（登録済みナレッジのみに基づく設計）</td><td><span class="badge b-green">完了</span></td></tr>
           </tbody>
         </table>
         </div>
