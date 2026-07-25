@@ -518,7 +518,7 @@
         <table class="tbl">
           <thead><tr><th style="width:12%">軸</th><th>必要な情報</th><th style="width:22%">主な入力経路</th></tr></thead>
           <tbody>
-            <tr><td>戦略</td><td>事業概要・1年後目標・現在の課題・顧客課題・選ばれる理由・競合3社・優良顧客像</td><td><span class="badge b-gray">未実装</span></td></tr>
+            <tr><td>戦略</td><td>事業概要・1年後目標・現在の課題・顧客課題・選ばれる理由・競合3社・優良顧客像</td><td><span class="badge b-green">ヒアリングシート登録</span></td></tr>
             <tr><td>商品</td><td>商品説明・サービス資料（価格表・売上構成）・顧客の声・購買障壁</td><td><span class="badge b-green">Facts登録</span></td></tr>
             <tr><td>設計</td><td>GA4・Search Console・ヒートマップ・購買導線・広告データ</td><td><span class="badge b-green">API連携＋Facts登録</span></td></tr>
             <tr><td>体制</td><td>社内体制・外部パートナー・意思決定者・体制図</td><td><span class="badge b-green">Facts登録</span></td></tr>
@@ -526,9 +526,9 @@
           </tbody>
         </table>
         </div>
-        <div class="callout warn" style="margin-top:14px;">
-          <span class="callout-icon">⚠️</span>
-          <div>「戦略」軸に必要なヒアリングシート項目（事業概要・競合・ペルソナ等）は、まだ入力できる画面がありません。次の実装候補です。</div>
+        <div class="callout info" style="margin-top:14px;">
+          <span class="callout-icon">✅</span>
+          <div>2026-07-25、「戦略」軸に必要なヒアリングシート項目もヒアリングシート機能として実装済みになり、5軸すべてで入力経路が揃いました。</div>
         </div>
       </div>
 
@@ -539,6 +539,16 @@
           <img src="images/screenshot-ga4report.png" alt="GA4レポート画面：チャネル別実績（セッション数シェア・月次推移）">
         </div>
         <div class="screenshot-caption">チャネル別実績（セッション数シェア・月次推移）</div>
+      </div>
+
+      <div class="card">
+        <h3>ヒアリングシート機能（2026-07-25実装）</h3>
+        <p>ほりのさんのヒアリングシートテンプレ（Google Sheet）に準拠した専用画面（<code>/clients/&#123;client_id&#125;/hearing-sheet</code>）を新設。診断対象・事業概要・1年後目標・現在の課題・商品説明・顧客課題・選ばれる理由・競合3社・優良顧客像・購買障壁・購買導線・過去施策・成功施策・社内体制・外部パートナー・意思決定者・制約条件・改善意向の19項目と、主要数値（契約継続型／Web集客型の2パターン、該当する方だけ入力）を1画面で登録できます。</p>
+        <p>クライアント固有Facts（自由カテゴリのファイル/テキスト登録）とは異なり、こちらは<strong>固定の質問票</strong>という位置づけです。登録内容は診断エンジンのプロンプトに「ヒアリングシート回答」として組み込まれ、未回答の項目は自動的に除外されます。</p>
+        <div class="callout info" style="margin-top:14px;">
+          <span class="callout-icon">🔁</span>
+          <div>収益モデルはシート上「選択式」の想定でしたが、選択肢が未確定だったため自由記述欄として実装しています。</div>
+        </div>
       </div>
 
       <div class="card">
@@ -738,7 +748,7 @@
             <tr><td>API連携実装（GA4・Search Console）</td><td>GA4 Data API・Search Console APIからのデータ取得・facts保存、独立したGA4レポート画面</td><td><span class="badge b-green">完了</span></td></tr>
             <tr><td>診断ロジック設計・実装</td><td>Facts＋軸別ナレッジの組み合わせ、5軸スコア算出・ギャップ分析・改善提案生成（登録済みナレッジのみに基づく設計）</td><td><span class="badge b-green">完了</span></td></tr>
             <tr><td>クライアント固有Facts登録機能</td><td>サービス資料・顧客の声・体制図等9カテゴリをテキスト／ファイル(PDF・Excel・PowerPoint・CSV)で登録</td><td><span class="badge b-green">完了</span></td></tr>
-            <tr><td>ヒアリングシート項目の入力対応</td><td>「戦略」軸に必要な事業概要・競合・ペルソナ等の入力画面はまだ未実装</td><td><span class="badge b-gray">未着手</span></td></tr>
+            <tr><td>ヒアリングシート項目の入力対応</td><td>「戦略」軸に必要な事業概要・競合・ペルソナ等19項目＋主要数値2パターンの入力画面</td><td><span class="badge b-green">完了</span></td></tr>
           </tbody>
         </table>
         </div>
