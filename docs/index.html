@@ -148,6 +148,11 @@
   .mock-badge-text { color: var(--green); background: var(--green-bg); }
   .mock-unset { display: inline-block; font-size: 10.5px; color: var(--yellow); background: var(--yellow-bg); border: 1px solid var(--yellow-border); border-radius: 4px; padding: 2px 8px; margin: 3px 6px 0 0; }
 
+  /* ── 実画面キャプチャ ── */
+  .screenshot { border: 1px solid var(--border); border-radius: 10px; overflow: hidden; margin: 14px 0; box-shadow: 0 1px 3px rgba(0,0,0,.08); }
+  .screenshot img { display: block; width: 100%; height: auto; }
+  .screenshot-caption { font-size: 11.5px; color: var(--text-secondary); text-align: center; margin-top: 6px; }
+
   /* ── Misc ── */
   p { margin-bottom: 10px; }
   p:last-child { margin-bottom: 0; }
@@ -374,6 +379,19 @@
         </div>
       </div>
 
+      <div class="card">
+        <h3>実際の診断レポート画面</h3>
+        <p>「Ⅱ 診断」の内容は、実装済みの診断レポート画面（<code>/report/&#123;client_id&#125;/diagnosis</code>）でこのように表示されます。各項目には「📚 ナレッジ活用○%」「⚠️ ナレッジ不足」のバッジが付き、AIの解釈がどれだけ登録済みナレッジに基づいているかが一目で分かります。</p>
+        <div class="screenshot">
+          <img src="images/screenshot-diagnosis-scores.png" alt="診断レポート画面：5軸評価とAI診断コメント">
+        </div>
+        <div class="screenshot-caption">5軸評価・AI診断コメント（ナレッジ活用率バッジ付き）</div>
+        <div class="screenshot" style="margin-top:18px;">
+          <img src="images/screenshot-diagnosis-issues.png" alt="診断レポート画面：課題整理シートと期待値シミュレーション">
+        </div>
+        <div class="screenshot-caption">課題整理シート・期待値シミュレーション</div>
+      </div>
+
       <div class="card flow-card">
         <div class="step-circle" style="background:var(--green);">Ⅲ</div>
         <div class="flow-body">
@@ -516,8 +534,18 @@
       </div>
 
       <div class="card">
+        <h3>GA4レポート画面（実画面）</h3>
+        <p>AI診断とは独立した、Looker Studio相当のGA4・Search Consoleレポート画面（<code>/report/&#123;client_id&#125;/ga4</code>）。「設計」「データ」軸のインプットはここで確認できます。</p>
+        <div class="screenshot">
+          <img src="images/screenshot-ga4report.png" alt="GA4レポート画面：チャネル別実績（セッション数シェア・月次推移）">
+        </div>
+        <div class="screenshot-caption">チャネル別実績（セッション数シェア・月次推移）</div>
+      </div>
+
+      <div class="card">
         <h3>クライアント固有Facts登録機能（2026-07-25実装）</h3>
         <p>GA4・Search Console等のAPIデータではカバーできない定性情報（サービス資料・顧客の声・体制図など9カテゴリ）を、クライアントごとに登録できる画面を新設しました。テキスト貼り付けと、PDF・Excel・PowerPoint・CSVファイルのアップロードの両方に対応し、<strong>カテゴリごとにどちらの登録方法が向いているか</strong>（表・原本ものはファイル、文章主体はテキスト）を画面上でヒント表示します。</p>
+        <p class="screenshot-caption" style="text-align:left;margin-bottom:6px;">※ この画面の実キャプチャは未取得のため、実装内容に基づく再現図です。</p>
 
         <div class="mock-screen">
           <div class="mock-titlebar">クライアント情報登録 <span class="mock-url">/clients/4/facts</span></div>
@@ -576,6 +604,15 @@
           <li>誰かがナレッジを追加すると、翌日には全員の診断に反映される（アプリの更新は不要）</li>
           <li>他社へ展開する場合も、ナレッジ（Notion側）を差し替えるだけで済む設計</li>
         </ul>
+      </div>
+
+      <div class="card">
+        <h3>診断ダッシュボード（実画面）</h3>
+        <p>各PC上でローカル起動するアプリ本体のトップ画面。総合診断スコア・5軸スコア・スコア推移・診断根拠ナレッジを一覧できます。</p>
+        <div class="screenshot">
+          <img src="images/screenshot-dashboard.png" alt="AI初期診断ダッシュボードのトップ画面">
+        </div>
+        <div class="screenshot-caption">AI初期診断ダッシュボード（クライアント名は非公開のためマスク処理済み）</div>
       </div>
     </section>
 
@@ -651,6 +688,15 @@
           <span class="callout-icon">📈</span>
           <div>例：7月ナレッジ100件 → 8月120件 → 9月150件。蓄積されるほど診断品質も自然に向上します。</div>
         </div>
+      </div>
+
+      <div class="card">
+        <h3>ナレッジ登録画面（実画面）</h3>
+        <p>商談メモ・議事録を貼り付けて「AIで構造化する」を押すだけで、AIが判断基準・成功パターンを抽出し候補として一覧化します。長文は自動分割され、件数上限はありません。</p>
+        <div class="screenshot">
+          <img src="images/screenshot-knowledge.png" alt="ナレッジ登録画面：商談メモの貼り付けとレビュー待ちナレッジ一覧">
+        </div>
+        <div class="screenshot-caption">STEP1（貼り付け→AI構造化）とレビュー待ちナレッジ一覧</div>
       </div>
 
       <div class="card">
