@@ -125,6 +125,29 @@
   .b-purple { background: var(--purple-bg); color: var(--purple); border: 1px solid var(--purple-border); }
   .b-gray   { background: #f1f5f9; color: #64748b; border: 1px solid #e2e8f0; }
 
+  /* ── 画面イメージ（モックアップ） ── */
+  .mock-screen { border: 1px solid var(--border); border-radius: 10px; overflow: hidden; margin: 14px 0; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,.06); }
+  .mock-titlebar { background: var(--header-bg); color: #fff; font-size: 12.5px; font-weight: 700; padding: 10px 16px; display: flex; align-items: center; gap: 10px; }
+  .mock-url { font-weight: 400; font-size: 11px; color: #93c5fd; }
+  .mock-body { padding: 18px 20px; background: var(--content-bg); }
+  .mock-row { margin-bottom: 6px; }
+  .mock-label { font-size: 11px; color: var(--text-secondary); margin-bottom: 5px; }
+  .mock-select { background: #fff; border: 1px solid var(--border); border-radius: 6px; padding: 7px 10px; font-size: 12.5px; }
+  .mock-hint { font-size: 11px; color: var(--text-secondary); margin: 6px 0 12px; }
+  .mock-tabs { display: flex; gap: 8px; margin-bottom: 10px; }
+  .mock-tab { flex: 1; text-align: center; padding: 7px; border-radius: 6px; font-size: 11.5px; background: #fff; border: 1px solid var(--border); color: var(--text-secondary); }
+  .mock-tab.active { background: var(--accent-light); border-color: var(--accent); color: var(--accent); font-weight: 700; }
+  .mock-file { background: #fff; border: 1px dashed var(--border); border-radius: 6px; padding: 8px 10px; font-size: 12px; color: var(--text-secondary); margin-bottom: 12px; }
+  .mock-btn { display: inline-block; background: var(--accent); color: #fff; font-size: 12px; font-weight: 700; padding: 7px 20px; border-radius: 6px; }
+  .mock-divider { border-top: 1px solid var(--border); margin: 16px 0; }
+  .mock-list-title { font-size: 12.5px; font-weight: 700; margin-bottom: 10px; }
+  .mock-item { background: #fff; border: 1px solid var(--border); border-radius: 6px; padding: 10px 12px; margin-bottom: 8px; font-size: 12px; }
+  .mock-item-date { font-size: 10.5px; color: var(--text-secondary); margin-top: 4px; }
+  .mock-badge { display: inline-block; font-size: 10px; font-weight: 700; border-radius: 4px; padding: 1px 7px; margin-left: 6px; }
+  .mock-badge-file { color: var(--accent); background: var(--accent-light); }
+  .mock-badge-text { color: var(--green); background: var(--green-bg); }
+  .mock-unset { display: inline-block; font-size: 10.5px; color: var(--yellow); background: var(--yellow-bg); border: 1px solid var(--yellow-border); border-radius: 4px; padding: 2px 8px; margin: 3px 6px 0 0; }
+
   /* ── Misc ── */
   p { margin-bottom: 10px; }
   p:last-child { margin-bottom: 0; }
@@ -470,6 +493,66 @@
           <div>いずれも任意項目です。無料相談段階でどこまで揃うかが、①の診断精度を左右します。</div>
         </div>
       </div>
+
+      <div class="card">
+        <h3>診断5軸と必要データのマッピング（2026-07-25追加）</h3>
+        <p>診断サマリーの5軸（戦略／商品／設計／体制／データ）は、それぞれ必要とするインプットの種類が異なります。GA4のようなアクセス解析データだけでは判断できない軸（特に商品・体制）があることが分かったため、軸ごとに何が必要かを明示しています。</p>
+        <div class="tbl-wrap">
+        <table class="tbl">
+          <thead><tr><th style="width:12%">軸</th><th>必要な情報</th><th style="width:22%">主な入力経路</th></tr></thead>
+          <tbody>
+            <tr><td>戦略</td><td>事業概要・1年後目標・現在の課題・顧客課題・選ばれる理由・競合3社・優良顧客像</td><td><span class="badge b-gray">未実装</span></td></tr>
+            <tr><td>商品</td><td>商品説明・サービス資料（価格表・売上構成）・顧客の声・購買障壁</td><td><span class="badge b-green">Facts登録</span></td></tr>
+            <tr><td>設計</td><td>GA4・Search Console・ヒートマップ・購買導線・広告データ</td><td><span class="badge b-green">API連携＋Facts登録</span></td></tr>
+            <tr><td>体制</td><td>社内体制・外部パートナー・意思決定者・体制図</td><td><span class="badge b-green">Facts登録</span></td></tr>
+            <tr><td>データ</td><td>GA4・Search Console・売上データ・広告データ</td><td><span class="badge b-green">API連携＋Facts登録</span></td></tr>
+          </tbody>
+        </table>
+        </div>
+        <div class="callout warn" style="margin-top:14px;">
+          <span class="callout-icon">⚠️</span>
+          <div>「戦略」軸に必要なヒアリングシート項目（事業概要・競合・ペルソナ等）は、まだ入力できる画面がありません。次の実装候補です。</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>クライアント固有Facts登録機能（2026-07-25実装）</h3>
+        <p>GA4・Search Console等のAPIデータではカバーできない定性情報（サービス資料・顧客の声・体制図など9カテゴリ）を、クライアントごとに登録できる画面を新設しました。テキスト貼り付けと、PDF・Excel・PowerPoint・CSVファイルのアップロードの両方に対応し、<strong>カテゴリごとにどちらの登録方法が向いているか</strong>（表・原本ものはファイル、文章主体はテキスト）を画面上でヒント表示します。</p>
+
+        <div class="mock-screen">
+          <div class="mock-titlebar">クライアント情報登録 <span class="mock-url">/clients/4/facts</span></div>
+          <div class="mock-body">
+            <div class="mock-row">
+              <div class="mock-label">カテゴリ</div>
+              <div class="mock-select">売上データ（月別売上・粗利・受注件数）</div>
+            </div>
+            <div class="mock-hint">📄 このカテゴリは元ファイル（表・PDF等）のまま取り込む方が抜け漏れが少なくおすすめです。</div>
+            <div class="mock-tabs">
+              <div class="mock-tab active">📄 ファイルから取込</div>
+              <div class="mock-tab">✍️ テキスト貼り付け</div>
+            </div>
+            <div class="mock-file">📎 sales_2026.xlsx を選択</div>
+            <div class="mock-btn">保存</div>
+            <div class="mock-divider"></div>
+            <div class="mock-list-title">登録済み情報一覧</div>
+            <div class="mock-item">
+              <div>売上データ（月別売上・粗利・受注件数） <span class="mock-badge mock-badge-file">📄 ファイル取込（sales_2026.xlsx）</span></div>
+              <div class="mock-item-date">最終更新: 2026-07-25</div>
+            </div>
+            <div class="mock-item">
+              <div>顧客の声（レビュー・アンケート・導入事例） <span class="mock-badge mock-badge-text">✍️ テキスト入力</span></div>
+              <div class="mock-item-date">最終更新: 2026-07-24</div>
+            </div>
+            <div class="mock-unset">サービス資料（商品・価格表・商品別売上構成）: 未登録（📄ファイル推奨）</div>
+            <div class="mock-unset">体制図（社内体制・外部パートナー一覧）: 未登録（✍️テキスト推奨）</div>
+          </div>
+        </div>
+
+        <div class="callout info" style="margin-top:14px;">
+          <span class="callout-icon">🔁</span>
+          <div>登録された内容は診断エンジンのプロンプトに「クライアント固有情報」として組み込まれ、GA4実績データと同様に事実情報として扱われます（解釈・示唆は引き続き登録済みナレッジの範囲内で行う設計は変わりません）。</div>
+        </div>
+      </div>
     </section>
 
     <!-- 7 -->
@@ -607,8 +690,10 @@
         <table class="tbl">
           <tbody>
             <tr><td>分析対象クライアント・APIの確定</td><td>モノラボファクトリー様でGA4連携・診断を先行実施。他クライアントへの展開は順次</td><td style="width:90px"><span class="badge b-blue">進行中</span></td></tr>
-            <tr><td>API連携実装（GA4等）</td><td>GA4 Data APIからのデータ取得・facts保存</td><td><span class="badge b-green">完了</span></td></tr>
+            <tr><td>API連携実装（GA4・Search Console）</td><td>GA4 Data API・Search Console APIからのデータ取得・facts保存、独立したGA4レポート画面</td><td><span class="badge b-green">完了</span></td></tr>
             <tr><td>診断ロジック設計・実装</td><td>Facts＋軸別ナレッジの組み合わせ、5軸スコア算出・ギャップ分析・改善提案生成（登録済みナレッジのみに基づく設計）</td><td><span class="badge b-green">完了</span></td></tr>
+            <tr><td>クライアント固有Facts登録機能</td><td>サービス資料・顧客の声・体制図等9カテゴリをテキスト／ファイル(PDF・Excel・PowerPoint・CSV)で登録</td><td><span class="badge b-green">完了</span></td></tr>
+            <tr><td>ヒアリングシート項目の入力対応</td><td>「戦略」軸に必要な事業概要・競合・ペルソナ等の入力画面はまだ未実装</td><td><span class="badge b-gray">未着手</span></td></tr>
           </tbody>
         </table>
         </div>
