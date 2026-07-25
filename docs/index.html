@@ -252,7 +252,7 @@
     <div class="nav-group">診断設計</div>
     <a class="nav-item" href="#ch3"><span class="nav-badge">3</span> 診断アウトプット設計</a>
     <a class="nav-item" href="#ch4"><span class="nav-badge">4</span> ヒアリングシート</a>
-    <a class="nav-item" href="#ch5"><span class="nav-badge">5</span> KPI設計</a>
+    <a class="nav-item" href="#ch5"><span class="nav-badge">5</span> 事前ヒアリングで収集したいデータ群</a>
     <a class="nav-item" href="#ch6"><span class="nav-badge">6</span> データ共有依頼リスト</a>
 
     <div class="nav-group">システム設計</div>
@@ -328,11 +328,11 @@
         </div>
       </div>
       <div class="card">
-        <h3>無料相談との対応関係</h3>
-        <p>契約フローは <strong>資料DL → 無料相談（1時間・課題ヒアリング）→ 契約 → プロジェクト開始</strong>。ステップ①は、この<strong>無料相談に相当</strong>します。</p>
+        <h3>無料診断との対応関係</h3>
+        <p>契約フローは <strong>無料診断 → ご提案 → 契約 → プロジェクト開始</strong>。ステップ①は、この<strong>無料診断に相当</strong>します。</p>
         <div class="callout warn">
           <span class="callout-icon">⚠️</span>
-          <div><strong>設計上の重要な前提：</strong>無料相談の段階では、クライアントから全データを預かることはできません。したがって①の役割は、②〜⑫の本格分析（データ接続後）に進む前の、<strong>仮説レベルでの課題発見</strong>です。取得できるデータの範囲に応じた診断精度であることを、あらかじめ双方で合意しておく必要があります。</div>
+          <div><strong>設計上の重要な前提：</strong>無料診断の段階では、クライアントから全データを預かることはできません。したがって①の役割は、②〜⑫の本格分析（データ接続後）に進む前の、<strong>仮説レベルでの課題発見</strong>です。取得できるデータの範囲に応じた診断精度であることを、あらかじめ双方で合意しておく必要があります。</div>
         </div>
       </div>
     </section>
@@ -347,6 +347,11 @@
       <div class="callout note">
         <span class="callout-icon">⚠️</span>
         <div><strong>情報源についての注記：</strong>この3部構成は、ほりのさんからテキストベースでいただいたアウトプットイメージの説明をもとに設計しています。実際に過去クライアントへ提供した診断アウトプットの現物サンプル（PDF・スライド等）はまだ受領できていません。今後サンプルを確認できた場合、構成・粒度・表現の細部を実物に合わせて見直す可能性があります。</div>
+      </div>
+
+      <div class="callout info">
+        <span class="callout-icon">📤</span>
+        <div><strong>出力形式：</strong>診断レポートはGoogleスライドとして出力できるようにする。</div>
       </div>
 
       <div class="card flow-card">
@@ -448,7 +453,7 @@
     <section class="section" id="ch5">
       <div class="section-header">
         <div class="step-circle" style="background:var(--green);">5</div>
-        <div><h2>KPI設計</h2><div class="sub">ビジネスモデルに応じて2種類を切り替える</div></div>
+        <div><h2>事前ヒアリングで収集したいデータ群</h2><div class="sub">ビジネスモデルに応じて2種類を切り替える</div></div>
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
         <div class="card" style="margin-bottom:0;">
@@ -507,7 +512,7 @@
         </div>
         <div class="callout info" style="margin-top:14px;">
           <span class="callout-icon">ℹ️</span>
-          <div>いずれも任意項目です。無料相談段階でどこまで揃うかが、①の診断精度を左右します。</div>
+          <div>いずれも任意項目です。無料診断段階でどこまで揃うかが、①の診断精度を左右します。</div>
         </div>
       </div>
 
@@ -742,6 +747,7 @@
         <table class="tbl">
           <tbody>
             <tr><td>知識候補DB運用・診断からの自動提案</td><td>診断結果からAIが知識候補を自動提示、承認でNotionへ反映</td><td style="width:90px"><span class="badge b-gray">未着手</span></td></tr>
+            <tr><td>診断レポートのGoogleスライド出力</td><td>診断レポートをGoogleスライド形式で出力できるようにする</td><td><span class="badge b-gray">未着手</span></td></tr>
             <tr><td>認証方式・対象デバイス・デプロイ先</td><td>複数コンサルの利用を想定した基盤整備</td><td><span class="badge b-yellow">検討中</span></td></tr>
             <tr><td>施策実行管理・効果測定（PDCA拡張）</td><td>action_itemsテーブル設計のみ準備済み</td><td><span class="badge b-gray">対象外</span></td></tr>
           </tbody>
@@ -817,7 +823,7 @@
           <div class="exp-head"><span class="exp-mission-num">⑥</span><span class="exp-mission-name">ゴール＆KPI設計</span></div>
           <h4>KPI逆算シミュレーターAI</h4>
           <p>契約継続型／Web集客型のKPIテンプレートを軸に、1年後の目標から逆算した月次試算を自動生成する。</p>
-          <div class="exp-reuse">再利用：本ツールのKPI設計（5章）</div>
+          <div class="exp-reuse">再利用：本ツールの事前ヒアリングで収集したいデータ群（5章）</div>
         </div>
         <div class="exp-card">
           <div class="exp-head"><span class="exp-mission-num">⑦</span><span class="exp-mission-name">集客チャネル設計</span></div>
@@ -859,7 +865,7 @@
 
       <div class="callout note" style="margin-top:16px;">
         <span class="callout-icon">🌱</span>
-        <div><strong>基盤の考え方：</strong>どのツールも「Notionナレッジ基盤」「診断エンジン」「ヒアリング・KPI設計」という①の共通土台の上に載る設計です。ステップが進むごとにナレッジが積み上がっていくため、後続ツールほど立ち上がりが早く、診断の精度も高まっていきます。</div>
+        <div><strong>基盤の考え方：</strong>どのツールも「Notionナレッジ基盤」「診断エンジン」「ヒアリングによるデータ収集」という①の共通土台の上に載る設計です。ステップが進むごとにナレッジが積み上がっていくため、後続ツールほど立ち上がりが早く、診断の精度も高まっていきます。</div>
       </div>
     </section>
 
